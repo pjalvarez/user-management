@@ -2,6 +2,9 @@ package s4c.microservices.users_management;
 
 import io.swagger.annotations.Api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +15,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import s4c.microservices.model.DummieRequest;
-import s4c.microservices.model.DummieResponse;
+import s4c.microservices.users_management.model.DummieResponse;
+import s4c.microservices.users_management.model.DummieRequest;
+import s4c.microservices.users_management.model.entity.Assets;
+import s4c.microservices.users_management.model.entity.User;
+import s4c.microservices.users_management.model.services.AssetsService;
+import s4c.microservices.users_management.model.services.UserService;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +33,23 @@ import org.slf4j.LoggerFactory;
 public class UserManagementController {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	@Autowired
+	private AssetsService assetsService;
+	@Autowired
+	private UserService userService;
 
-	@RequestMapping(method = RequestMethod.GET, value = "assets")
-	@ApiOperation(value = "getAssets", nickname = "getAssets", response = DummieResponse.class)
+	@RequestMapping(method = RequestMethod.GET, value = "assets", produces="application/json")
+	@ApiOperation(value = "getAssets", nickname = "getAssets", response = Assets.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse getAssets(
-			@ApiParam(value = "request", required = false) @RequestBody(required = false) DummieRequest request){
+	public List<Assets> getAssets(
+			@ApiParam(value = "request", required = false) @RequestBody(required = false) Assets request){
 		
-		return new DummieResponse("S4C. Not yet implemented (getAssets)");
+		return assetsService.listAssets();		
+
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "assets")
@@ -343,27 +358,32 @@ public class UserManagementController {
 	
 	
 	@RequestMapping(method = RequestMethod.GET, value = "users")
-	@ApiOperation(value = "getUsers", nickname = "getUsers", response = DummieResponse.class)
+	@ApiOperation(value = "getUsers", nickname = "getUsers", response = User.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse getUsers(
-			@ApiParam(value = "request", required = false) @RequestBody(required = false) DummieRequest request){
+	public List<User> getUsers(
+			@ApiParam(value = "request", required = false) @RequestBody(required = false) User request){
 		
-		return new DummieResponse("S4C. Not yet implemented (getUsers)");
+		return userService.listUsers();
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "users")
-	@ApiOperation(value = "postUser", nickname = "postUser", response = DummieResponse.class)
+	@ApiOperation(value = "postUser", nickname = "postUser", response = User.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse postUser(
-			@ApiParam(value = "request", required = true) @RequestBody(required = true) DummieRequest request){
+	public ResponseEntity<User> postUser(
+			@ApiParam(value = "request", required = true) @RequestBody(required = true) User request){
 		
-		return new DummieResponse("S4C. Not yet implemented (postUser)");
+			User repository = userService.postUser(request);
+			if(repository != null) {
+				return new ResponseEntity<User>( repository,HttpStatus.OK);
+			} else {
+				return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+			}
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "users/login")
@@ -445,17 +465,21 @@ public class UserManagementController {
 	
 	
 	@RequestMapping(method = RequestMethod.GET, value = "users/{userId}")
-	@ApiOperation(value = "getUserById", nickname = "getUserById", response = DummieResponse.class)
+	@ApiOperation(value = "getUserById", nickname = "getUserById", response = User.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
-			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse getUserById (
-			@PathVariable("userId") String userId,
-			@ApiParam(value = "request", required = false) 
-			@RequestBody(required = false) DummieRequest request){
-		
-		return new DummieResponse("S4C. Not yet implemented (getUserById) " + userId);
+			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })
+	public ResponseEntity<User> getUserById(@PathVariable("userId") String userId,
+			@ApiParam(value = "request", required = false) @RequestBody(required = false) User request) {
+
+		User repository = userService.getUserById(Long.parseLong(userId));
+		if (repository != null) {
+			return new ResponseEntity<User>(repository, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "users/{userId}")
