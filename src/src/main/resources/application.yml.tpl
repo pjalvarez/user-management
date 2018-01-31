@@ -1,19 +1,19 @@
 server:
-  port: 8080 
+  port: _MICROSERVICE_PORT_
 eureka:
   instance:
     leaseRenewalIntervalInSeconds: 10
     leaseExpirationDurationInSeconds: 11
   client:
     serviceUrl:
-      defaultZone: http://dev-sac-fase-dos-eureka-registry.emergyalabs.com:8080/eureka/
+      defaultZone: http://_EUREKA_VHOST_:_EUREKA_PORT_/eureka/
     healthcheck:
       enabled: true
     lease: null
 duration: 5
 spring:
   application:
-    name: s4c-microservice-user-management
+    name: _MICROSERVICE_
 logging:
   file: logs/${spring.application.name}.log
   level:

@@ -26,6 +26,11 @@ public class AssetsService implements IAssetsService {
 
 	}
 
+
+	public Assets getAssetById(long id) {
+		return assetsRepository.findOne(id);
+	}
+
 //	/**
 //	 * Adds a new Dashboard
 //	 */

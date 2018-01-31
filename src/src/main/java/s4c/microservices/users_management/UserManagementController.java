@@ -66,17 +66,22 @@ public class UserManagementController {
 	
 	
 	@RequestMapping(method = RequestMethod.GET, value = "assets/{assetId}")
-	@ApiOperation(value = "getAssetById", nickname = "getAssetById", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "getAssetById", nickname = "getAssetById", response = Assets.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = Assets.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse getAssetById (
+	public ResponseEntity<Assets> getAssetById (
 			@PathVariable("assetId") String assetId,
 			@ApiParam(value = "request", required = false) 
-			@RequestBody(required = false) DummieRequest request){
+			@RequestBody(required = false) Assets request){
 		
-		return new DummieResponse("S4C. Not yet implemented (getAssetById) " + assetId);
+		Assets repository = assetsService.getAssetById(Long.parseLong(assetId));
+		if (repository != null) {
+			return new ResponseEntity<Assets>(repository, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Assets>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "assets/{assetId}")
