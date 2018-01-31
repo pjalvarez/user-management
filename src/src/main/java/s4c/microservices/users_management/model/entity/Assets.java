@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "assets")
 public class Assets {
-	
+//dummie change	
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
