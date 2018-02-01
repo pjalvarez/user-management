@@ -380,14 +380,18 @@ public class UserManagementController {
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public ResponseEntity<User> postUser(
+	public ResponseEntity<?> postUser(
 			@ApiParam(value = "request", required = true) @RequestBody(required = true) User request){
 		
-			User repository = userService.postUser(request);
-			if(repository != null) {
-				return new ResponseEntity<User>( repository,HttpStatus.OK);
-			} else {
-				return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+			if(userService.findByEmail(request.getEmail()) == null){
+				User repository = userService.postUser(request);
+				if(repository != null) {
+					return new ResponseEntity<User>( repository,HttpStatus.CREATED);
+				} else {
+					return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+				}
+			} else {				
+				return new ResponseEntity<String>("Previously registered email",HttpStatus.CONFLICT);
 			}
 	}
 	

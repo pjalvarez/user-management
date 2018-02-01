@@ -96,11 +96,12 @@ public class UserService implements IUserService {
 	 * 
 	 */
 	public User postUser(User user) {
-		if (user != null) {
+		if (user != null) {			
 			user = this.adjustRoles(user);
 			user = this.adjustAssets(user);
 			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 			return userRepository.saveAndFlush((user));
+		
 		}
 		return null;
 	}
@@ -121,5 +122,7 @@ public class UserService implements IUserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }
