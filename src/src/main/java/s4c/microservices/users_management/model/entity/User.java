@@ -86,6 +86,10 @@ public class User  implements UserDetails {
 			this.setRoles(new ArrayList<Role>());
 		this.roles.add(role);
 	}
+	public void removeRole(Role role){
+		if(this.getRoles()!=null)			
+			this.roles.remove(role);
+	}
 	public Long getId() {
 		return id;
 	}

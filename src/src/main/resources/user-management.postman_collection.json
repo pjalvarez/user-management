@@ -1,0 +1,474 @@
+{
+	"info": {
+		"name": "user-management",
+		"_postman_id": "c9927fe9-51c2-d486-c560-9e6d84eeeac5",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getAssets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://us1.fiwoo.eu:6000/api/users/assets",
+					"protocol": "http",
+					"host": [
+						"us1",
+						"fiwoo",
+						"eu"
+					],
+					"port": "6000",
+					"path": [
+						"api",
+						"users",
+						"assets"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getUserById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://us1.fiwoo.eu:6000/api/users/users/2",
+					"protocol": "http",
+					"host": [
+						"us1",
+						"fiwoo",
+						"eu"
+					],
+					"port": "6000",
+					"path": [
+						"api",
+						"users",
+						"users",
+						"2"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getUsers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/users/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"users"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "postUser",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \n  \"name\": \"RaFoss\",\n  \"surname\": \"Ee\",\n  \"email\": \"rcc2@la-ira.com\",\n  \"date_of_birth\": \"1990-02-26\",\n  \"password\": \"frufru\",\n  \"gender\": \"female\",\n  \"assets\": [\n    {\"name\":\"Asset A\"}\n  ],\n  \"roles\": [{\"name\":\"Administrador\"}]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"users"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic c2VsZWN0NGNpdGllczp3LUB5N0ZDKX55IzlLdWouYkBfTHRyM24mYW1G"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "RaFo",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "frufru",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://us1.fiwoo.eu:7000/users/login",
+					"protocol": "http",
+					"host": [
+						"us1",
+						"fiwoo",
+						"eu"
+					],
+					"port": "7000",
+					"path": [
+						"users",
+						"login"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "listResources",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://dev-sac-fase-dos-user-management.emergyalabs.com:8080/users/resources",
+					"protocol": "http",
+					"host": [
+						"dev-sac-fase-dos-user-management",
+						"emergyalabs",
+						"com"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"resources"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "postRole",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Get Devices\",\n  \"description\": \"This resource allows to get the devices information\",\n  \"resources\": [\n\n  ]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/roles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "postResourcesRolesTest",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n\n\t\t{\"name\":\"Resource A\",\"description\":\"none\"},\n\t\t{\"name\":\"Resource B\",\"description\":\"none\"}\n]"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/roles/32/resources",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles",
+						"32",
+						"resources"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getRolesTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/users/roles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getRoleByIdTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateRoleTest",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"name\": \"Get Devices\",\n\"description\": \"Allows to get the devices information\",\n\"resources\": [\n\t{\"name\": \"GET_Device_DeviceId\"},\n\t{\"name\": \"GET_Devices_Unexistent\"}\n\t]}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/roles/65",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles",
+						"65"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getRolesUserTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/users/roles/user/359",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles",
+						"user",
+						"359"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "updateUserRolesTest",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\"id\":\"387\"}]"
+				},
+				"url": {
+					"raw": "http://localhost:8080/users/roles/user/436",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles",
+						"user",
+						"436"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "deleteeUserRolesTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getUsersRoleTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/users/roles/1/user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles",
+						"1",
+						"user"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "checkRoleUserTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/users/roles/user/460/hasRole/416",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles",
+						"user",
+						"460",
+						"hasRole",
+						"416"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "getResourcesRolesTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "removeResourceRoleTest",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/users/roles",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"roles"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

@@ -11,6 +11,8 @@ import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "resource")
 public class Resource {
@@ -25,9 +27,19 @@ public class Resource {
 	private String description;
 	
 	@ManyToMany
+	@JsonIgnore
 	private Set<User> users;
 	
 	
+	public Resource(){}
+	
+	public Resource(long id, String name, String description) {
+		this.id =  id;
+		this.name =  name;
+		this.description = description;
+		
+		
+	}
 	public Long getId() {
 		return id;
 	}

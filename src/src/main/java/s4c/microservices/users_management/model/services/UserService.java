@@ -1,7 +1,6 @@
 package s4c.microservices.users_management.model.services;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,4 +124,170 @@ public class UserService implements IUserService {
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    
+    /**
+     * Add to user previously registered roles.
+     * @param user
+     * @param nuevos_roles
+     * @return
+     */
+	public boolean updateUserRoles(User user, List<Role> nuevos_roles) {
+		
+		if(nuevos_roles!=null){
+			user =  this.getRideOfUserRolesUpdate(user, nuevos_roles);
+			if(user != null) {
+				userRepository.saveAndFlush(user);
+				return true;
+			} else 
+				return false;
+		}
+		
+		return false;
+	}
+	
+	public boolean deleteUserRoles(User user, List<Role> nuevos_roles) {
+		
+		if(nuevos_roles!=null){
+			user =  this.getRideOfUserRolesDelete(user, nuevos_roles);
+			if(user != null) {
+				userRepository.saveAndFlush(user);
+				return true;
+			} else 
+				return false;
+		}
+		
+		return false;
+	}
+
+	
+	/**
+	 *  
+	 * @param user
+	 * @param nuevos_roles
+	 * @return
+	 */
+	private User getRideOfUserRolesDelete(User user, List<Role> nuevos_roles) {
+		if (nuevos_roles != null) {
+			ArrayList<Role> troles = new ArrayList<Role>();
+			boolean ok = true;
+			//check if all roles exists
+			for(Role role : nuevos_roles){
+				try {
+					Role orole = this.roleRepository.findOne(role.getId());
+					if((orole.getId()!=null) && (user.getRoles().contains(orole))){
+							troles.add(orole);	
+						
+					} else {
+						ok = false;
+						break;
+					}
+				} catch (javax.persistence.EntityNotFoundException e){
+					ok = false;
+					break;	
+				}
+			}
+			
+			if(!ok){
+				user = null;
+			} else {
+				if(!troles.isEmpty()){
+					for(Role role : troles){					
+						user.removeRole(role);
+					}
+				}
+			}
+		}
+		
+		return user;
+	}
+	
+	/**
+	 *  
+	 * @param user
+	 * @param nuevos_roles
+	 * @return
+	 */
+	private User getRideOfUserRolesUpdate(User user, List<Role> nuevos_roles) {
+		if (nuevos_roles != null) {
+			ArrayList<Role> troles = new ArrayList<Role>();
+			boolean ok = true;
+			//check if all roles exists
+			for(Role role : nuevos_roles){
+				try {
+					Role orole = this.roleRepository.findOne(role.getId());
+					if((orole!=null)){
+						//Avoids add same Role serveral times. 
+						if(!user.getRoles().contains(orole))
+							troles.add(orole);					
+					} else {
+						ok = false;
+						break;
+					}
+				} catch (javax.persistence.EntityNotFoundException e){
+					ok = false;
+					break;	
+				}
+			}
+			
+			if(!ok){
+				user = null;
+			} else {
+				for(Role role : troles){
+					user.addRole(role);
+				}	
+			}
+		}
+		
+		return user;
+		
+		
+//		if (nuevos_roles != null) {
+//			ArrayList<Role> newRoles = new ArrayList<Role>();
+//			ArrayList<Role> toRemoveRoles = new ArrayList<Role>();
+//			for (Role role_original : user.getRoles()) {
+//				boolean hasRole = false;
+//				for (Role role : nuevos_roles) {					
+//					if (role_original.getName().toLowerCase().equals(role.getName().toLowerCase())) {
+//						if(role.getDescription()!=null){
+//							if(!role_original.getDescription().equals(role.getDescription())){
+//								role_original.setDescription(role.getDescription());
+//							}
+//						}
+//						hasRole = true;
+//						break;
+//					}
+//				}
+//				if (hasRole) {
+//					newRoles.add(role_original);
+//				} else {
+//					role_original.setUsers(null);
+//					toRemoveRoles.add(role_original);
+//				}
+//			}
+//
+//			for (Role role : nuevos_roles) {
+//				boolean hasRole = false;
+//				for (Role role_original : user.getRoles()) {
+//					if (role_original.getName().toLowerCase().equals(role.getName().toLowerCase())) {
+//						hasRole = true;
+//						break;
+//					}
+//				}
+//				if (!hasRole) {					
+//					newRoles.add(role);
+//				}
+//			}
+//
+//			user.getRoles().removeAll(toRemoveRoles);
+//			user.setRoles(newRoles);
+//
+//			// Delete useless entities.	
+//			for(Role role : toRemoveRoles){				
+//				user.getRoles().remove(role);
+//				this.roleRepository.delete(role);
+//			}
+//
+//		}		
+	}
 }

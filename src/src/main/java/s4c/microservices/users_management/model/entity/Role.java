@@ -1,7 +1,7 @@
 package s4c.microservices.users_management.model.entity;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,23 +31,53 @@ public class Role {
 	private String description;
 	
 	@ManyToMany
-	private Set<Resource> resources;
+	private List<Resource> resources;
 	
 	@ManyToMany(mappedBy = "roles")
 	@JsonIgnore
-	private Set<User> users;
+	private List<User> users;
 	
+	public Role (){}
+	public Role(long id, String name, String description) {
+
+		this.id=id;
+		this.name = name;
+		this.description = description;
+		
+	}
+
+
 	public void addUser(User user){
 		if(this.getUsers()==null)
-			this.setUsers(new TreeSet<User>());
+			this.users= new ArrayList<User>();
+		
 		users.add(user);
 	}
 	
-	public Set<User> getUsers() {
+	public void removeUser(User user){
+		if(this.getUsers()==null)
+			users.remove(user);
+	}
+	
+	
+	public void addResource(Resource resource){
+		if(this.getResources() == null)
+			this.resources = new ArrayList<Resource>();
+		
+		resources.add(resource);
+	}
+	
+	
+	public void removeResource(Resource resource){
+		if(this.getResources() != null)
+			resources.remove(resource);
+	}
+	
+	public List<User> getUsers() {
 		return users;
 	}
 	
-	public void setUsers(Set<User> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 
@@ -69,10 +99,10 @@ public class Role {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Set<Resource> getResources() {
+	public List<Resource> getResources() {
 		return resources;
 	}
-	public void setResources(Set<Resource> resources) {
+	public void setResources(List<Resource> resources) {
 		this.resources = resources;
 	}
 
