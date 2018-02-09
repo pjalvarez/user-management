@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import s4c.microservices.users_management.model.DummieResponse;
+import s4c.microservices.users_management.model.changePasswordRequest;
 import s4c.microservices.users_management.model.DummieRequest;
 import s4c.microservices.users_management.model.entity.Assets;
 import s4c.microservices.users_management.model.entity.Resource;
@@ -61,15 +63,21 @@ public class UserManagementController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "assets")
-	@ApiOperation(value = "postAsset", nickname = "postAsset", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "postAsset", nickname = "postAsset", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse postAsset(
-			@ApiParam(value = "request", required = true) @RequestBody(required = true) DummieRequest request){
+	public ResponseEntity<Assets> postAsset(
+			@ApiParam(value = "request", required = true) @RequestBody(required = true) Assets request){
 		
-		return new DummieResponse("S4C. Not yet implemented (postAsset)");
+		
+		Assets asset = this.assetsService.addAsset(request);
+		if(asset != null){
+			return new ResponseEntity(asset,HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity("Check if parents and childrens exists", HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 	}
 	
 	
@@ -93,62 +101,91 @@ public class UserManagementController {
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "assets/{assetId}")
-	@ApiOperation(value = "updateAsset", nickname = "updateAsset", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "updateAsset", nickname = "updateAsset", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse updateAsset (
+	public ResponseEntity<?> updateAsset (
 			@PathVariable("assetId") String assetId,
 			@ApiParam(value = "request", required = true) 
-			@RequestBody(required = true) DummieRequest request){
+			@RequestBody(required = true) Assets request){
 		
-		return new DummieResponse("S4C. Not yet implemented (updateAsset) " + assetId);
+		
+		Assets asset = assetsService.getAssetById(Long.parseLong(assetId));		
+		if(asset != null){			
+			boolean success = this.assetsService.updateAsset(asset,request);
+			if(success){
+				return new ResponseEntity<String>(HttpStatus.OK);
+			} else {
+				return new ResponseEntity<String>("Check if parents and childrens exists", HttpStatus.UNPROCESSABLE_ENTITY);
+			}
+		} else {
+			return new ResponseEntity<String>(HttpStatus.UNPROCESSABLE_ENTITY);	
+		}
+		
+		
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE, value = "assets/{assetId}")
-	@ApiOperation(value = "deleteAsset", nickname = "deleteAsset", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "deleteAsset", nickname = "deleteAsset", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse deleteAsset (
+	public ResponseEntity<?> deleteAsset (
 			@PathVariable("assetId") String assetId,
 			@ApiParam(value = "request", required = false) 
-			@RequestBody(required = false) DummieRequest request){
+			@RequestBody(required = false) Assets request){
 		
-		return new DummieResponse("S4C. Not yet implemented (deleteAsset) " + assetId);
+		Assets asset = assetsService.getAssetById(Long.parseLong(assetId));		
+		if(asset != null){			
+			 this.assetsService.deleteAsset(asset);			
+			 return new ResponseEntity<String>(HttpStatus.OK);			
+		} else {
+			return new ResponseEntity<String>(HttpStatus.UNPROCESSABLE_ENTITY);	
+		}		
 	}	
 
 		
 	
 	@RequestMapping(method = RequestMethod.GET, value = "assets/{assetId}/check")
-	@ApiOperation(value = "checkAsset", nickname = "checkAsset", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "checkAsset", nickname = "checkAsset", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse checkAsset (
+	public ResponseEntity<?> checkAsset (
 			@PathVariable("assetId") String assetId, 
 			@ApiParam(value = "request", required = false) 
-			@RequestBody(required = false) DummieRequest request){
+			@RequestBody(required = false) Assets request){
 		
-		return new DummieResponse("S4C. Not yet implemented (checkAsset) " + assetId);
+		Assets asset = assetsService.getAssetById(Long.parseLong(assetId));		
+		if(asset != null){
+			 return new ResponseEntity<String>(HttpStatus.OK);			
+		} else {
+			return new ResponseEntity<String>(HttpStatus.UNPROCESSABLE_ENTITY);	
+		}
 	}	
 
 	
 	@RequestMapping(method = RequestMethod.GET, value = "assets/{assetId}/users")
-	@ApiOperation(value = "assetUser", nickname = "assetUser", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "assetUser", nickname = "assetUser", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse assetUser (
+	public ResponseEntity<?> assetUser (
 			@PathVariable("assetId") String assetId, 
 			@ApiParam(value = "request", required = false) 
-			@RequestBody(required = false) DummieRequest request){
+			@RequestBody(required = false) User request){
 		
-		return new DummieResponse("S4C. Not yet implemented (assetUser) " + assetId);
+		Assets asset = assetsService.getAssetById(Long.parseLong(assetId));		
+		if(asset != null){
+			 return new ResponseEntity<List<User>>(asset.getUsers(),HttpStatus.OK);			
+		} else {
+			return new ResponseEntity<String>(HttpStatus.UNPROCESSABLE_ENTITY);	
+		}
 	}	
 	
 	
@@ -513,7 +550,7 @@ public class UserManagementController {
 				if(repository != null) {
 					return new ResponseEntity<User>( repository,HttpStatus.CREATED);
 				} else {
-					return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+					return new ResponseEntity<String>("Check if roles and assets exist",HttpStatus.UNPROCESSABLE_ENTITY);
 				}
 			} else {				
 				return new ResponseEntity<String>("Previously registered email",HttpStatus.CONFLICT);
@@ -617,46 +654,75 @@ public class UserManagementController {
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "users/{userId}")
-	@ApiOperation(value = "updateUser", nickname = "updateUser", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "updateUser", nickname = "updateUser", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse updateUser (
+	public ResponseEntity<?> updateUser (
 			@PathVariable("userId") String userId,
 			@ApiParam(value = "request", required = true) 
-			@RequestBody(required = true) DummieRequest request){
+			@RequestBody(required = true) User request){
 		
-		return new DummieResponse("S4C. Not yet implemented (updateUser) " + userId);
+		User repository = userService.getUserById(Long.parseLong(userId));
+		if (repository != null) {
+			repository = userService.updateUser(repository, request);
+			if (repository != null)
+				return new ResponseEntity<User>(repository,HttpStatus.OK);
+			else 
+				return new ResponseEntity<String>("Check if assets and roles exist",HttpStatus.OK);
+		} else {
+			return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE, value = "users/{userId}")
-	@ApiOperation(value = "deleteUser", nickname = "deleteUser", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "deleteUser", nickname = "deleteUser", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse deleteUser (
+	public ResponseEntity<?> deleteUser (
 			@PathVariable("userId") String userId,
 			@ApiParam(value = "request", required = false) 
-			@RequestBody(required = false) DummieRequest request){
+			@RequestBody(required = false) String request){
 		
-		return new DummieResponse("S4C. Not yet implemented (deleteUser) " + userId);
+		User repository = userService.getUserById(Long.parseLong(userId));
+		if (repository != null) {
+			userService.deleteUser(repository);
+			return new ResponseEntity<User>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 	}	
 
 	
 	@RequestMapping(method = RequestMethod.PUT, value = "users/{userId}/password")
-	@ApiOperation(value = "changePassword", nickname = "changePassword", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "changePassword", nickname = "changePassword", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse changePassword (
+	public ResponseEntity<?> changePassword (
 			@PathVariable("userId") String userId,
 			@ApiParam(value = "request", required = true) 
-			@RequestBody(required = true) DummieRequest request){
+			@RequestBody(required = true) changePasswordRequest request){
 		
-		return new DummieResponse("S4C. Not yet implemented (changePassword) " + userId);
+		User repository = userService.getUserById(Long.parseLong(userId));
+		
+		if (repository != null) {
+			repository = userService.changePassword(repository,request);
+			if(repository != null) 
+				return new ResponseEntity<User>(HttpStatus.OK);
+			else 
+				return new ResponseEntity<String>("Passwords doesn't match",HttpStatus.UNPROCESSABLE_ENTITY);
+		} else {
+			return new ResponseEntity<User>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+		
+		
+
 	}
 	
 	

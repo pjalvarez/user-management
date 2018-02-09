@@ -168,4 +168,15 @@ public class User  implements UserDetails {
 		return true;
 	}
 
+	public void setUsername(String username) {
+		this.name = username;
+		
+	}
+
+	public void removeAsset(Assets asset) {
+		if(this.assets != null)
+			assets.remove(asset);
+		
+	}
+
 }

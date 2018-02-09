@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import s4c.microservices.users_management.model.entity.Assets;
+import s4c.microservices.users_management.model.entity.Role;
+import s4c.microservices.users_management.model.entity.User;
 import s4c.microservices.users_management.model.repository.AssetsRepository;
 
 @Service
@@ -31,164 +33,175 @@ public class AssetsService implements IAssetsService {
 		return assetsRepository.findOne(id);
 	}
 
-//	/**
-//	 * Adds a new Dashboard
-//	 */
-//	@Override
-//	public Dashboards addDashboard(Dashboards dashboard) {
-//		if (dashboard != null)
-//			return dashboardsRepository.saveAndFlush(setRelations(dashboard));
-//		else
-//			return dashboard;
-//	}
-//
-//	/**
-//	 * Sets the correct relation between entities to persist
-//	 * 
-//	 * @param dashboard
-//	 *            dashboard
-//	 * @return dashboard
-//	 */
-//	private Dashboards setRelations(Dashboards dashboard) {
-//		if (dashboard.getAssets() != null)
-//			dashboard.getAssets().forEach(asset -> asset.setDashboard(dashboard));
-//
-//		Consumer<Sources> consumerSource = new Consumer<Sources>() {
-//			public void accept(Sources source) {
-//				if (source.getParameters() != null)
-//					source.getParameters().forEach(parameter -> parameter.setSource(source));
-//			}
-//		};
-//
-//		Consumer<Widgets> consumerWidget = new Consumer<Widgets>() {
-//			@Override
-//			public void accept(Widgets widget) {
-//				widget.setDashboard(dashboard);
-//				if (widget.getSources() != null) {
-//					widget.getSources().forEach(source -> source.setWidget(widget));
-//					widget.getSources().forEach(consumerSource);
-//				}
-//				if (widget.getProperties() != null)
-//					widget.getProperties().forEach(prop -> prop.setWidget(widget));
-//
-//				if (widget.getType() != null && !widget.getType().name.isEmpty()) {
-//					SourceType type = sourceTypeRepository.findOneByName(widget.getType().getName());
-//					if (type != null) {
-//						widget.setType(type);
-//					} else {
-//						widget.setType(null);
-//					}
-//				}
-//
-//			};
-//		};
-//
-//		if (dashboard.getWidgets() != null)
-//			dashboard.getWidgets().forEach(consumerWidget);
-//
-//		return dashboard;
-//
-//	}
-//
-//	public Dashboards getDashboardById(String dashboardId) {
-//		return dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//	}
-//
-//	public Boolean updateDashboard(String dashboardId, Dashboards dashboard) {
-//
-//		Dashboards original = dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//		if (original != null) {
-//			dashboardsRepository.delete(original);
-//			dashboard = setRelations(dashboard);
-//			dashboardsRepository.saveAndFlush(dashboard);
-//			return true;
-//		} 
-//		return false;
-//	}
-//	
-//	
-//	public Boolean deleteDashboard(String dashboardId){
-//		Dashboards original = dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//		if (original != null) {
-//			dashboardsRepository.delete(original);
-//			return true;
-//		}
-//		
-//		return false;
-//		
-//	}
-//	
-//	
-//	public List<Widgets> getWidgetsInDashboard(String dashboardId){
-//		Dashboards original = dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//		if(original!=null){
-//			return (List<Widgets>) original.getWidgets();
-//		}
-//		return null;
-//	}
-//	
-//	@Override
-//	public  List<Widgets> createWidgetInDashboard(String dashboardId, Widgets widget){
-//		Dashboards original = dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//		if(original!=null){
-//			if(original.getWidgets()==null)				
-//				original.setWidgets(new ArrayList<Widgets>());
-//			
-//			widget.setDashboard(original);
-//			original.getWidgets().add(widget);
-//			
-//			original = setRelations(original);
-//			
-//			dashboardsRepository.saveAndFlush(original);
-//			return (List<Widgets>) original.getWidgets();
-//			
-//		}		
-//		return null;		
-//	}
-//	
-//	public Widgets  findWidgetInDashboard(String dashboardId, String widgetId){
-//		Dashboards original = dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//		Widgets widget = widgetRepository.findOne(Long.parseLong(widgetId));
-//		if((original!=null) && (widget!=null)){
-//			if(original.getWidgets().contains(widget)){
-//				return widget;
-//			} 	
-//		}
-//		return null;
-//	}
-//	
-//	public Boolean  updateWidgetInDashboard(String dashboardId, String widgetId, Widgets newWidget){
-//		Dashboards original = dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//		Widgets widget = widgetRepository.findOne(Long.parseLong(widgetId));
-//		if((original!=null) && (widget!=null)){
-//			if(original.getWidgets().contains(widget)){
-//				original.getWidgets().remove(widget);
-//				widgetRepository.delete(widget);
-//				newWidget.setDashboard(original);
-//				original.getWidgets().add(newWidget);
-//				original = setRelations(original);
-//				dashboardsRepository.saveAndFlush(original);
-//				return true;
-//			}
-//		}
-//		return false;
-//		
-//	}
-//	
-//	public Boolean  deleteWidgetInDashboard(String dashboardId, String widgetId){
-//		Dashboards original = dashboardsRepository.findOne(Long.parseLong(dashboardId));
-//		Widgets widget = widgetRepository.findOne(Long.parseLong(widgetId));
-//		if((original!=null) && (widget!=null)){
-//			if(original.getWidgets().contains(widget)){
-//				original.getWidgets().remove(widget);
-//				widget.setDashboard(null);
-//				widgetRepository.delete(widget);
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
+
+	/**
+	 * 
+	 * @param asset
+	 * @return asset
+	 */
+	public Assets addAsset(Assets asset) {
+		//check if parents and childens exist
+		ArrayList<Assets> parents2add = new ArrayList<Assets>();
+		ArrayList<Assets> childrens2add = new ArrayList<Assets>();
+		boolean ok = true;
+			
+		if(asset.getParents() != null){
+			for(Assets parent :  asset.getParents()){
+				Assets p = this.assetsRepository.findOne(parent.getId());
+				if(p == null) {
+					ok = false;
+					break;
+				} else {
+					parents2add.add(p);
+				}
+			}
+		}
+		if(asset.getChildrens() != null){
+			for(Assets children :  asset.getChildrens()){
+				Assets p = this.assetsRepository.findOne(children.getId());
+				if(p == null) {
+					ok = false;
+					break;
+				} else {
+					childrens2add.add(p);
+				}
+			}
+		}
+		
+		if(ok) {
+			asset.setChildrens(null);
+			asset.setParents(null);			
+			asset.setChildrens(childrens2add);
+			asset.setParents(parents2add);			
+			assetsRepository.saveAndFlush(asset);
+		} else {
+			asset = null;
+		}
+		
+		
+		return asset;
+	}
 
 
+	public boolean updateAsset(Assets asset, Assets request) {
+
+		
+		if((request.getDescription()!=null)) 
+			if(asset.getDescription()==(null))
+				asset.setDescription(request.getDescription());
+			else if(!asset.getDescription().equals(request.getDescription()))
+				asset.setDescription(request.getDescription());
+
+		if((request.getName()!=null))
+			if(asset.getName() == null || ((asset.getName() != null) && !request.getName().equals(asset.getName())))
+				asset.setName(request.getName());
+
+		if((request.getType()!=null))  
+			if(asset.getType() == null || ((asset.getType()!=null) && !request.getType().equals(asset.getType())))
+				asset.setType(request.getType());
+		
+		if(request.getChildrens()!=null){
+			asset = getRideOfAssets(asset,request.getChildrens(),false);
+		}
+		if((asset!=null) && request.getParents()!=null){
+			asset = getRideOfAssets(asset,request.getParents(),true);
+		}
+		
+		if(asset != null) {
+			assetsRepository.saveAndFlush(asset);
+			return true;
+		} else {
+			return false;
+		}
+		
+	}
+	
+	
+	/**
+	 * Update related assets (parent or children ones)
+	 * 
+	 * @param asset
+	 * @param nuevos_assets
+	 * @param parent
+	 * @return
+	 */
+	private Assets getRideOfAssets(Assets asset, List<Assets> nuevos_assets, boolean parent) {
+		if (nuevos_assets != null) {
+			ArrayList<Assets> tAssets = new ArrayList<Assets>();
+			List<Assets> tRemove = new ArrayList<Assets>();
+			List<Assets> current_assets = new ArrayList<Assets>();
+			boolean ok = true;
+			if(parent) {
+				if(asset.getParents()!=null)
+					current_assets =  asset.getParents();
+			} else {
+				if(asset.getChildrens()!=null)
+					current_assets =  asset.getChildrens();
+			}
+			
+			for(Assets asset_n : nuevos_assets){
+				try {
+					Assets oasset = this.assetsRepository.findOne(asset_n.getId());
+					//if exists and is not previously registered on the original, we have to add.
+					if((oasset!=null)){
+						if (!current_assets.contains(oasset))
+							tAssets.add(oasset);	
+					} else {
+						ok = false;
+						break;
+					}
+				} catch (javax.persistence.EntityNotFoundException e){
+					ok = false;
+					break;	
+				}
+			}
+			
+			if(!ok){
+				asset = null;
+			} else {
+				//if any original asset doesnt appear in nuevos_Assets, we have to remove
+				for(Assets asset_original : current_assets){
+					boolean found = false;
+					for(Assets nasset : nuevos_assets){
+						if(nasset.getId().equals(asset_original.getId())){
+							found = true;
+							break;
+						}						
+					}
+					if(!found)
+						tRemove.add(asset_original);
+				}
+
+				//add new Assets
+				if(!tAssets.isEmpty()){
+					for(Assets asset_n : tAssets){
+						if(parent)							
+							asset.addParent(asset_n);
+						else
+							asset.addChildren(asset_n);
+					}
+				}
+				
+				//remove not referenced assets in the request.
+				if(!tRemove.isEmpty()){
+					for(Assets asset_n : tRemove){
+						if(parent){
+							asset.removeParent(asset_n);
+						} else {
+							asset.removeChildren(asset_n);
+						}
+					}					
+				}
+			}
+		}
+		
+		return asset;
+	}
+
+
+	public void deleteAsset(Assets asset) {
+		assetsRepository.delete(asset);
+		
+	}
 	
 }

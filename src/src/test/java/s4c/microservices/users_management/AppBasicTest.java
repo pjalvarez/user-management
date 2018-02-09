@@ -26,70 +26,6 @@ public class AppBasicTest
 	@Autowired
 	private TestRestTemplate restTemplate;
 	
-	@Test
-	public void postAssetsTest() {
-		String url = "/users/assets";
-		String json = "{\"id\":\"666\"}";
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> request = new HttpEntity<String>(json, headers);
-		ResponseEntity<DummieResponse> response = this.restTemplate.postForEntity(url,
-				request, DummieResponse.class);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	
-	@Test
-	public void getAssetByIdTest() {
-		String url = "/users/assets/{id}";
-		 HashMap<String, String> urlVariables = new HashMap<String, String>();
-		 urlVariables.put("id", "44");		 
-		ResponseEntity<DummieResponse> response = this.restTemplate.getForEntity(url,
-				 DummieResponse.class,urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	@Test
-	public void updateAssetTest() {
-		String url = "/users/assets/{id}";
-		HashMap<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("id", "44");
-
-		String json = "{\"nombre\":\"Fede\"}";
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> request = new HttpEntity<String>(json, headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT,
-				request, String.class, urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	
-	@Test
-	public void deleteAssetTest() {
-		String url = "/users/assets/{id}";
-		HashMap<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("id", "44");		
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE,
-				null, String.class, urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	
-	@Test
-	public void checkAssetsTest() {
-		String url = "/users/assets/{id}/check";
-		HashMap<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("id", "44");	
-		ResponseEntity<DummieResponse> response = this.restTemplate.getForEntity(url,
-				DummieResponse.class, String.class,urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	@Test
-	public void assetsUserTest() {
-		String url = "/users/assets/{id}/users";
-		HashMap<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("id", "44");	
-		ResponseEntity<DummieResponse> response = this.restTemplate.getForEntity(url,
-				DummieResponse.class, String.class,urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}	
 
 	@Test
 	public void getSessionsTest() {
@@ -150,48 +86,6 @@ public class AppBasicTest
 		ResponseEntity<DummieResponse> response = this.restTemplate.getForEntity(url,
 				DummieResponse.class, String.class,urlVariables);
 		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	
-
-	@Test
-	public void updateUserTest() {
-		String url = "/users/users/{id}";
-		HashMap<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("id", "44");
-
-		String json = "{\"nombre\":\"Fede\"}";
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> request = new HttpEntity<String>(json, headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT,
-				request, String.class, urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	
-	@Test
-	public void deleteUserTest() {
-		String url = "/users/users/{id}";;
-		HashMap<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("id", "44");		
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE,
-				null, String.class, urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	
-	@Test
-	public void changePasswordTest() {
-		String url = "/users/users/{id}/password";
-		HashMap<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("id", "44");
-
-		String json = "{\"nombre\":\"Fede\"}";
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> request = new HttpEntity<String>(json, headers);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT,
-				request, String.class, urlVariables);
-		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-	}
-	
+	}	
 
 }

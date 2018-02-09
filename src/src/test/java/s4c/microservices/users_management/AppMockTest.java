@@ -46,6 +46,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import s4c.microservices.users_management.model.DummieResponse;
+import s4c.microservices.users_management.model.entity.Assets;
 import s4c.microservices.users_management.model.entity.Resource;
 import s4c.microservices.users_management.model.entity.Role;
 import s4c.microservices.users_management.model.entity.User;
@@ -71,6 +72,7 @@ public class AppMockTest
     private List<User> userList = new ArrayList<>();
     private List<Resource> resourcesList = new ArrayList<>();
     private List<Role> roleList = new ArrayList<>();
+    private List<Assets> assetsList = new ArrayList<>();
     private HttpMessageConverter<?> mappingJackson2HttpMessageConverter;
 
     private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
@@ -143,6 +145,7 @@ public class AppMockTest
     	this.userRepository.deleteAll();
     	this.roleRepository.deleteAll();
     	this.resourceRepository.deleteAll();
+    	this.assetsRepository.deleteAll();
     }
     
     @Before
@@ -152,17 +155,28 @@ public class AppMockTest
         this.userRepository.deleteAllInBatch();
         this.roleRepository.deleteAllInBatch();
         this.resourceRepository.deleteAllInBatch();
+        this.assetsRepository.deleteAllInBatch();
         
         
         try {
+        	
+        	
+        	this.assetsList.add(assetsRepository.save(new Assets(1L,"Asset A","yy","Building")));
+        	this.assetsList.add(assetsRepository.save(new Assets(2L,"Asset B","xx","Building")));
+        	this.assetsList.add(assetsRepository.save(new Assets(3L,"Asset MM","xe4eeex","Building")));
+        	this.assetsList.add(assetsRepository.save(new Assets(4L,"Asset 4444444","xe4eeex","Building")));
+        	
         	this.roleList.add(roleRepository.save(new Role(1L,"Role A","none")));
         	this.roleList.add(roleRepository.save(new Role(2L,"Role To Delete","none")));
         	this.roleList.add(roleRepository.save(new Role(3L,"Role To Add to user","none")));
         	this.resourcesList.add(resourceRepository.saveAndFlush(new Resource(1L,"Resource A","none")));
         	
         	
-        	
-	        this.userList.add(userRepository.save(new User(1L,"rcarballo",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo@emergya.com")));
+        	User usuarioA = new User(1L,"rcarballo",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo@emergya.com");
+        	usuarioA.addAssets(assetsList.get(0));
+        	usuarioA.addRole(roleList.get(0));
+	        this.userList.add(userRepository.save(usuarioA));
+	        this.userList.add(userRepository.save(new User(2L,"rcarballo75",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo75@emergya.com")));
         } catch (DataIntegrityViolationException e){
         	this.userList.add(userRepository.findOne(1L));
         	
@@ -188,8 +202,9 @@ public class AppMockTest
 	@Test
 	public void postUsersTest() throws Exception {
 		String url = "/users/users";
+		 String json = "{\"name\": \"User 1\",\"surname\": \"Example\",\"email\": \"email@example.com\",\"date_of_birth\": \"1990-02-26\",\"password\": \"dm1m2'%cma1g64$4&1\",\"gender\": \"female\",\"assets\": [{\"id\":\""+this.assetsList.get(0).getId()+"\"}],\"roles\": [{\"id\":\""+this.roleList.get(0).getId()+"\"}]}";
 		mockMvc.perform(post(url)
-				.content(user_json)
+				.content(json)
 				.contentType(contentType)
 				).andExpect(status().isCreated());
 	}
@@ -347,7 +362,104 @@ public class AppMockTest
 				).andExpect((status().isOk()));
 	}
 	
+	@Test
+	public void postAssetTest() throws Exception {
+		String url = "/users/assets";
+		String json = "{\"name\": \"Asset JJJ\",\"description\": \"none\",\"type\": \"Building\",\"parents\": [{\"id\":\""+assetsList.get(0).getId()+"\"}],\"childrens\": [{\"id\":\""+assetsList.get(1).getId()+"\"}]}";
+		mockMvc.perform(post(url)
+				.content(json)
+				.contentType(contentType)
+				).andExpect(status().isCreated());
+	}
 	
+	@Test
+	public void getAssetByIdTest() throws Exception {
+		String url = "/users/assets/" + this.assetsList.get(0).getId();
+		mockMvc.perform(get(url)				
+				.contentType(contentType)
+				).andExpect((status().isOk()));
+		
+	}
 	
+	@Test
+	public void updateAssetTest() throws Exception {
+		String url = "/users/assets/" + this.assetsList.get(3).getId();
+		String json = "{\"name\": \"Asset CUCU\",\"description\": \"none\",\"type\": \"Building\",\"parents\": [{\"id\":\""+assetsList.get(2).getId()+"\"}],\"childrens\": [{\"id\":\""+assetsList.get(2).getId()+"\"}]}";
+		mockMvc.perform(put(url)
+				.content(json)
+				.contentType(contentType)
+				).andExpect(status().isOk());	
+	}
+	
+	@Test
+	public void deleteAssetTest() throws Exception {
+		String url = "/users/assets/" + this.assetsList.get(3).getId();
+		mockMvc.perform(delete(url)
+				.contentType(contentType)
+				).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void checkAsset() throws Exception {
+		String url = "/users/assets/" + this.assetsList.get(3).getId()+"/check";		
+		mockMvc.perform(get(url)
+				.contentType(contentType)
+				).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void checkAssetFailure() throws Exception {
+		String url = "/users/assets/900000000/check";		
+		mockMvc.perform(get(url)
+				.contentType(contentType)
+				).andExpect(status().isUnprocessableEntity());
+	}	
+	
+	@Test
+	public void assetUserTest() throws Exception {
+		String url = "/users/assets/" + this.assetsList.get(3).getId()+"/users";		
+		mockMvc.perform(get(url)
+				.contentType(contentType)
+				).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void deleteUserTest() throws Exception {
+		String url = "/users/users/" + this.userList.get(1).getId();
+		mockMvc.perform(delete(url)
+				.contentType(contentType)
+				).andExpect(status().isOk());
+	}
+	
+	@Test
+	public void updateUserTest() throws Exception {
+		String url = "/users/users/" + this.userList.get(0).getId();
+		String json = "{\"name\": \"User 1\",\"surname\": \"Example\",\"email\": \"email@example.com\",\"date_of_birth\": \"1990-02-26\",\"password\": \"dm1m2'%cma1g64$4&1\",\"gender\": \"female\",\"assets\": [{\"id\":\""+this.assetsList.get(0).getId()+"\"}],\"roles\": []}";
+		mockMvc.perform(put(url)
+				.content(json)
+				.contentType(contentType)
+				).andExpect(status().isOk());
+		
+	}
+	
+	@Test
+	public void changePasswordTest() throws Exception {
+		String url = "/users/users/" + this.userList.get(0).getId() + "/password";
+		String json ="{\"old_password\" :\"Emergya\",\"new_password1\" :\"cucux\",\"new_password2\" :\"cucux\"}";
+		mockMvc.perform(put(url)
+				.content(json)
+				.contentType(contentType)
+				).andExpect(status().isOk());		
+	}
+	
+	@Test
+	public void changePasswordFailTest() throws Exception {
+		String url = "/users/users/" + this.userList.get(0).getId() + "/password";
+		String json ="{\"old_password\" :\"EmergyaX\",\"new_password1\" :\"cucux\",\"new_password2\" :\"cucux\"}";
+		mockMvc.perform(put(url)
+				.content(json)
+				.contentType(contentType)
+				).andExpect(status().isUnprocessableEntity());		
+	}
 
 }
