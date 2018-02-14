@@ -31,11 +31,11 @@ class SwaggerConfig {
                 .select()
                     .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
                     .paths(PathSelectors.any())
-                    .build()
+                        .build()
                 .pathMapping("/")
                 .genericModelSubstitutes(ResponseEntity.class)
                 .useDefaultResponseMessages(false);
-    }
+}
 
     /**
      * Generate Api Info

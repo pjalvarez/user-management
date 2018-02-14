@@ -172,11 +172,11 @@ public class AppMockTest
         	this.resourcesList.add(resourceRepository.saveAndFlush(new Resource(1L,"Resource A","none")));
         	
         	
-        	User usuarioA = new User(1L,"rcarballo",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo@emergya.com");
-        	usuarioA.addAssets(assetsList.get(0));
-        	usuarioA.addRole(roleList.get(0));
+        	User usuarioA = new User("rcarballo",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo@emergya.com");
+        	//usuarioA.addAssets(assetsList.get(0));
+        	//usuarioA.addRole(roleList.get(0));
 	        this.userList.add(userRepository.save(usuarioA));
-	        this.userList.add(userRepository.save(new User(2L,"rcarballo75",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo75@emergya.com")));
+	        this.userList.add(userRepository.save(new User("rcarballo75",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo75@emergya.com")));
         } catch (DataIntegrityViolationException e){
         	this.userList.add(userRepository.findOne(1L));
         	
@@ -212,7 +212,7 @@ public class AppMockTest
 	@Test
 	public void userLoginTest() throws Exception {
 
-		String contenido = this.obtainAccessToken("rcarballo@emergya.com", "Emergya");
+		String contenido = this.obtainAccessToken("rcarballo75@emergya.com", "Emergya");
 		Assert.assertFalse(StringUtils.isEmpty(contenido));
 	}
 	
@@ -461,5 +461,16 @@ public class AppMockTest
 				.contentType(contentType)
 				).andExpect(status().isUnprocessableEntity());		
 	}
+	
+	@Test
+	public void getAssetByUserIdTest() throws Exception {
+		String url = "/users/assets/" + this.userList.get(0).getId() + "/user";
+		
+		mockMvc.perform(get(url)
+				.contentType(contentType)
+				).andExpect(status().isOk());		
+	}
+	
+	
 
 }
