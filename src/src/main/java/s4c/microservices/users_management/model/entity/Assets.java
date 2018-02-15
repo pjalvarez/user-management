@@ -2,7 +2,6 @@ package s4c.microservices.users_management.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -43,7 +42,6 @@ public class Assets {
 	@JsonIgnore
 	private List<User> users;
 	
-
 
 	public  Assets(){}
 	

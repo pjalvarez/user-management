@@ -2,13 +2,11 @@ package s4c.microservices.users_management.model.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import s4c.microservices.users_management.model.entity.Assets;
-import s4c.microservices.users_management.model.entity.Role;
-import s4c.microservices.users_management.model.entity.User;
 import s4c.microservices.users_management.model.repository.AssetsRepository;
 
 @Service
