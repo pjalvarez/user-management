@@ -1,3 +1,3 @@
-spring.datasource.url=jdbc:mysql://_MYSQL_HOST_:3306/_MYSQL_DBNAME_
-spring.datasource.username=_MYSQL_USER_
-spring.datasource.password=_MYSQL_PASS_
+spring.datasource.url=jdbc:mysql://localhost:3306/user_management
+spring.datasource.username=root
+spring.datasource.password=1234

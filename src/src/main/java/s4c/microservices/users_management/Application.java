@@ -11,24 +11,17 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
 import s4c.microservices.users_management.model.entity.User;
 import s4c.microservices.users_management.model.repository.UserRepository;
 
 @EnableEurekaClient
-@EnableWebMvc
 @EnableDiscoveryClient
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "s4c.microservices.users_management.model")
-@ComponentScan("s4c.microservices.users_management")
+@ComponentScan("s4c.microservices")
 @EntityScan("s4c.microservices.users_management.model.entity")
 @EnableResourceServer
 public class Application extends SpringBootServletInitializer {

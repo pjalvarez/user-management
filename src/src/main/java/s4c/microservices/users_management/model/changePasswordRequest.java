@@ -1,7 +1,6 @@
 package s4c.microservices.users_management.model;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value="PingRequest", description="request data")
 public class changePasswordRequest {

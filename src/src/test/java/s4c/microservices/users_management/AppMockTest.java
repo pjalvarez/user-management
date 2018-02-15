@@ -1,17 +1,16 @@
 package s4c.microservices.users_management;
 
 import static org.junit.Assert.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.After;
@@ -21,16 +20,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,14 +30,10 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.Base64Utils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
-import s4c.microservices.users_management.model.DummieResponse;
+
 import s4c.microservices.users_management.model.entity.Assets;
 import s4c.microservices.users_management.model.entity.Resource;
 import s4c.microservices.users_management.model.entity.Role;
@@ -463,6 +451,23 @@ public class AppMockTest
 	}
 	
 	@Test
+	public void addSessions() throws Exception {
+		String url = "/users/sessions/";
+		String json ="{\"ip\" :\"35.228.48.125\",\"user_id\" :\"507f191e810c19729de860ef\",\"user_agent\" :\"Chrome 38.4\",\"created_at\" :\"2018-02-13\"}";
+		
+		mockMvc.perform(post(url)
+				.content(json)
+				.contentType(contentType)
+				).andExpect(status().isCreated());	
+	}
+	
+	@Test
+	public void getSessionsTest() throws Exception {
+		String url = "/users/sessions";
+		mockMvc.perform(get(url)).andExpect(status().isOk());
+
+	}
+	
 	public void getAssetByUserIdTest() throws Exception {
 		String url = "/users/assets/" + this.userList.get(0).getId() + "/user";
 		
@@ -470,7 +475,5 @@ public class AppMockTest
 				.contentType(contentType)
 				).andExpect(status().isOk());		
 	}
-	
-	
 
 }

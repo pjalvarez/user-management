@@ -1,10 +1,11 @@
 package s4c.microservices.users_management;
 
-import io.swagger.annotations.Api;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,25 +14,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import s4c.microservices.users_management.model.DummieRequest;
 import s4c.microservices.users_management.model.DummieResponse;
 import s4c.microservices.users_management.model.changePasswordRequest;
-import s4c.microservices.users_management.model.DummieRequest;
 import s4c.microservices.users_management.model.entity.Assets;
 import s4c.microservices.users_management.model.entity.Resource;
 import s4c.microservices.users_management.model.entity.Role;
+import s4c.microservices.users_management.model.entity.Sessions;
 import s4c.microservices.users_management.model.entity.User;
 import s4c.microservices.users_management.model.services.AssetsService;
+import s4c.microservices.users_management.model.services.ISessionsService;
 import s4c.microservices.users_management.model.services.ResourceService;
 import s4c.microservices.users_management.model.services.RoleService;
 import s4c.microservices.users_management.model.services.UserService;
 
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Api
 @RestController
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
 @CrossOrigin
 public class UserManagementController {
 
+	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
@@ -48,7 +50,9 @@ public class UserManagementController {
 	@Autowired
 	private ResourceService resourceService;
 	@Autowired
-	private RoleService roleService;
+	private RoleService roleService;	
+	@Autowired
+	private ISessionsService sessionsService;
 
 
 	@RequestMapping(method = RequestMethod.GET, value = "assets", produces="application/json")
@@ -64,6 +68,7 @@ public class UserManagementController {
 
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(method = RequestMethod.POST, value = "assets")
 	@ApiOperation(value = "postAsset", nickname = "postAsset", response = ResponseEntity.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
@@ -76,7 +81,7 @@ public class UserManagementController {
 		
 		Assets asset = this.assetsService.addAsset(request);
 		if(asset != null){
-			return new ResponseEntity(asset,HttpStatus.CREATED);
+			return new ResponseEntity<Assets>(asset,HttpStatus.CREATED);
 		} else {
 			return new ResponseEntity("Check if parents and childrens exists", HttpStatus.UNPROCESSABLE_ENTITY);
 		}
@@ -276,9 +281,9 @@ public class UserManagementController {
 		
 		User user = userService.getUserById(Long.parseLong(userId));
 		if(user != null){
-			return new ResponseEntity(user.getRoles(),HttpStatus.OK);
+			return new ResponseEntity<List<Role>>(user.getRoles(),HttpStatus.OK);
 		} else {
-			return new ResponseEntity(HttpStatus.UNPROCESSABLE_ENTITY);
+			return new ResponseEntity<List<Role>>(HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 	}
 	
@@ -297,13 +302,13 @@ public class UserManagementController {
 			if(user != null){
 				boolean success = userService.updateUserRoles(user,request);
 				if(success){
-					return new ResponseEntity("",HttpStatus.OK);	
+					return new ResponseEntity<String>("",HttpStatus.OK);	
 				} else {
-					return new ResponseEntity("Update Failure. Roles must exist and not be related to User.",HttpStatus.UNPROCESSABLE_ENTITY);
+					return new ResponseEntity<String>("Update Failure. Roles must exist and not be related to User.",HttpStatus.UNPROCESSABLE_ENTITY);
 				}
 				
 			} else {
-				return new ResponseEntity(HttpStatus.UNPROCESSABLE_ENTITY);
+				return new ResponseEntity<String>(HttpStatus.UNPROCESSABLE_ENTITY);
 			}
 	}
 	
@@ -313,7 +318,7 @@ public class UserManagementController {
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public ResponseEntity deleteRolesFromUser(
+	public ResponseEntity<String> deleteRolesFromUser(
 			@PathVariable("userId") String userId,		
 			@ApiParam(value = "request", required = false) 
 			@RequestBody(required = true) List<Role> request){
@@ -322,13 +327,13 @@ public class UserManagementController {
 			if(user != null){
 				boolean success = userService.deleteUserRoles(user,request);
 				if(success){
-					return new ResponseEntity("",HttpStatus.OK);	
+					return new ResponseEntity<String>("",HttpStatus.OK);	
 				} else {
-					return new ResponseEntity("Delete failed. Roles must be related to User.",HttpStatus.UNPROCESSABLE_ENTITY);
+					return new ResponseEntity<String>("Delete failed. Roles must be related to User.",HttpStatus.UNPROCESSABLE_ENTITY);
 				}
 				
 			} else {
-				return new ResponseEntity(HttpStatus.UNPROCESSABLE_ENTITY);
+				return new ResponseEntity<String>(HttpStatus.UNPROCESSABLE_ENTITY);
 			}
 	}
 	
@@ -491,7 +496,7 @@ public class UserManagementController {
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public ResponseEntity removeResourceRole (
+	public ResponseEntity<String> removeResourceRole (
 			@PathVariable("roleId") String roleId,
 			@PathVariable("resourceId") String resourceId,
 			@ApiParam(value = "request", required = false) 
@@ -527,7 +532,7 @@ public class UserManagementController {
 		if(role != null){			
 			return new ResponseEntity<List<User>>(role.getUsers(),HttpStatus.OK);
 		} else {
-			return new ResponseEntity(HttpStatus.UNPROCESSABLE_ENTITY);
+			return new ResponseEntity<List<User>>(HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 	}
 	
@@ -537,11 +542,29 @@ public class UserManagementController {
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse getSessions (			
+	public List<Sessions> getSessions (			
 			@ApiParam(value = "request", required = false) 
 			@RequestBody(required = false) DummieRequest request){
 		
-		return new DummieResponse("S4C. Not yet implemented (getSessions) ");
+		return sessionsService.listSessions();
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value = "sessions")
+	@ApiOperation(value = "postSessions", nickname = "postSessions", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
+			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
+	public ResponseEntity<Sessions> postSessions(
+			@ApiParam(value = "request", required = true) @RequestBody(required = true) Sessions sessions){
+		
+		
+		Sessions session = this.sessionsService.addSession(sessions);
+		if(session != null){
+			return new ResponseEntity<Sessions>(session,HttpStatus.CREATED);
+		} else {
+			return new ResponseEntity<Sessions>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 	}
 	
 	
