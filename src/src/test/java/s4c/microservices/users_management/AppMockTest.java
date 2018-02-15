@@ -160,11 +160,11 @@ public class AppMockTest
         	this.resourcesList.add(resourceRepository.saveAndFlush(new Resource(1L,"Resource A","none")));
         	
         	
-        	User usuarioA = new User(1L,"rcarballo",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo@emergya.com");
-        	usuarioA.addAssets(assetsList.get(0));
-        	usuarioA.addRole(roleList.get(0));
+        	User usuarioA = new User("rcarballo",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo@emergya.com");
+        	//usuarioA.addAssets(assetsList.get(0));
+        	//usuarioA.addRole(roleList.get(0));
 	        this.userList.add(userRepository.save(usuarioA));
-	        this.userList.add(userRepository.save(new User(2L,"rcarballo75",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo75@emergya.com")));
+	        this.userList.add(userRepository.save(new User("rcarballo75",bCryptPasswordEncoder.encode("Emergya"),"Carballo","rcarballo75@emergya.com")));
         } catch (DataIntegrityViolationException e){
         	this.userList.add(userRepository.findOne(1L));
         	
@@ -200,7 +200,7 @@ public class AppMockTest
 	@Test
 	public void userLoginTest() throws Exception {
 
-		String contenido = this.obtainAccessToken("rcarballo@emergya.com", "Emergya");
+		String contenido = this.obtainAccessToken("rcarballo75@emergya.com", "Emergya");
 		Assert.assertFalse(StringUtils.isEmpty(contenido));
 	}
 	
@@ -451,6 +451,7 @@ public class AppMockTest
 	}
 	
 	@Test
+<<<<<<< HEAD
 	public void addSessions() throws Exception {
 		String url = "/users/sessions/";
 		String json ="{\"ip\" :\"35.228.48.125\",\"user_id\" :\"507f191e810c19729de860ef\",\"user_agent\" :\"Chrome 38.4\",\"created_at\" :\"2018-02-13\"}";
@@ -467,5 +468,16 @@ public class AppMockTest
 		mockMvc.perform(get(url)).andExpect(status().isOk());
 
 	}
+=======
+	public void getAssetByUserIdTest() throws Exception {
+		String url = "/users/assets/" + this.userList.get(0).getId() + "/user";
+		
+		mockMvc.perform(get(url)
+				.contentType(contentType)
+				).andExpect(status().isOk());		
+	}
+	
+	
+>>>>>>> 489b2fc5e3fa0b6de3535041b32ef2724e1d1f14
 
 }

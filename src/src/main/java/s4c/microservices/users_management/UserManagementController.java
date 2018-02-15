@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,9 +33,17 @@ import s4c.microservices.users_management.model.services.ResourceService;
 import s4c.microservices.users_management.model.services.RoleService;
 import s4c.microservices.users_management.model.services.UserService;
 
+<<<<<<< HEAD
+=======
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+>>>>>>> 489b2fc5e3fa0b6de3535041b32ef2724e1d1f14
 @Api
 @RestController
 @RequestMapping("users")
+@CrossOrigin
 public class UserManagementController {
 
 	@SuppressWarnings("unused")
@@ -50,6 +59,7 @@ public class UserManagementController {
 	private RoleService roleService;	
 	@Autowired
 	private ISessionsService sessionsService;
+
 
 	@RequestMapping(method = RequestMethod.GET, value = "assets", produces="application/json")
 	@ApiOperation(value = "getAssets", nickname = "getAssets", response = Assets.class)
@@ -100,6 +110,25 @@ public class UserManagementController {
 			return new ResponseEntity<Assets>(repository, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<Assets>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value = "assets/{userId}/user")
+	@ApiOperation(value = "getAssetByUserId", nickname = "getAssetByUserId", response = List.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = List.class),
+			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
+			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
+			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
+	public ResponseEntity<List<Assets>> getAssetByUserId (
+			@PathVariable("userId") String userId,
+			@ApiParam(value = "request", required = false) 
+			@RequestBody(required = false) User request){
+		
+		User repository = userService.getUserById(Long.parseLong(userId));
+		if (repository != null) {
+			return new ResponseEntity<List<Assets>>(repository.getAssets(), HttpStatus.OK);
+		} else {
+			return new ResponseEntity<List<Assets>>(HttpStatus.UNPROCESSABLE_ENTITY);
 		}
 	}
 	

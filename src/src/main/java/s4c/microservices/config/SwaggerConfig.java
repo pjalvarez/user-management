@@ -33,6 +33,7 @@ class SwaggerConfig {
                     .build();
     }
 
+
     /**
      * Generate Api Info
      *
