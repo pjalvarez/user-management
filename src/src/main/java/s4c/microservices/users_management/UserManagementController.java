@@ -33,13 +33,7 @@ import s4c.microservices.users_management.model.services.ResourceService;
 import s4c.microservices.users_management.model.services.RoleService;
 import s4c.microservices.users_management.model.services.UserService;
 
-<<<<<<< HEAD
-=======
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
->>>>>>> 489b2fc5e3fa0b6de3535041b32ef2724e1d1f14
 @Api
 @RestController
 @RequestMapping("users")
