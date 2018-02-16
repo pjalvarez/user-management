@@ -12,6 +12,7 @@ services:
 env:
   global:
     - DOCKER_IMAGE=fiwoo/user-management
+    - JENKINS_TOKEN=user-management-ahN9eex?ohyook5BeeFaf6ai1ohx_ee1
 
 script:
   - docker build -t $DOCKER_IMAGE infrastructure/docker-containers/ubuntu_16.04-tomcat/
@@ -24,11 +25,13 @@ after_success:
       docker tag $DOCKER_IMAGE:latest $DOCKER_IMAGE:$DOCKER_IMAGE_TIMESTAMP-$DOCKER_IMAGE_COMMIT;
       docker push $DOCKER_IMAGE:latest;
       docker push $DOCKER_IMAGE:$DOCKER_IMAGE_TIMESTAMP-$DOCKER_IMAGE_COMMIT;
+      curl "http://ci-system-sac-fase-dos.emergyalabs.com:8080/jenkins/job/userManagement-MASTER-fiwoo-deployment/build?token=$JENKINS_TOKEN";
     fi
 
 notifications:
   email:
     recipients:
-      - sac-fase-dos-int@emergya.com
+      - sac-fase-dos-dev@emergya.com
     on_success: always
     on_failure: always
+
