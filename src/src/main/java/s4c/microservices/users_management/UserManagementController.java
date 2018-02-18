@@ -1,12 +1,18 @@
 package s4c.microservices.users_management;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +59,8 @@ public class UserManagementController {
 	private RoleService roleService;	
 	@Autowired
 	private ISessionsService sessionsService;
-
+	@Autowired
+	TokenStore tokenStore;
 
 	@RequestMapping(method = RequestMethod.GET, value = "assets", produces="application/json")
 	@ApiOperation(value = "getAssets", nickname = "getAssets", response = Assets.class)
@@ -537,16 +544,14 @@ public class UserManagementController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "sessions")
-	@ApiOperation(value = "getSessions", nickname = "getSessions", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "getSessions", nickname = "getSessions", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public List<Sessions> getSessions (			
-			@ApiParam(value = "request", required = false) 
-			@RequestBody(required = false) DummieRequest request){
+	public ResponseEntity<?> getSessions (){		
+		return new ResponseEntity<List<Sessions>>(new ArrayList<Sessions>(),HttpStatus.OK);
 		
-		return sessionsService.listSessions();
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "sessions")
@@ -601,40 +606,62 @@ public class UserManagementController {
 			}
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "users/login")
-	@ApiOperation(value = "login", nickname = "login", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
-			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
-			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
-			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse login(
-			@ApiParam(value = "request", required = true) @RequestBody(required = true) DummieRequest request){
-		
-		return new DummieResponse("S4C. Not yet implemented (login)");
-	}
+//	@RequestMapping(method = RequestMethod.POST, value = "users/login")
+//	@ApiOperation(value = "login", nickname = "login", response = DummieResponse.class)
+//	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+//			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
+//			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
+//			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
+//	public DummieResponse login(
+//			@ApiParam(value = "request", required = true) @RequestBody(required = true) DummieRequest request){
+//		
+//		return new DummieResponse("S4C. Not yet implemented (login)");
+//	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "users/logout")
-	@ApiOperation(value = "logout", nickname = "logout", response = DummieResponse.class)
+	@RequestMapping(method = RequestMethod.GET, value = "/users/logout")
+	@ApiOperation(value = "logout", nickname = "logout", response = String.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse logout(
-			@ApiParam(value = "request", required = false) @RequestBody(required = false) DummieRequest request){
+	public ResponseEntity<?> logout(HttpServletRequest request){
 		
-		return new DummieResponse("S4C. Not yet implemented (logout)");
+	      String authHeader = request.getHeader("Authorization");	      
+	        if (authHeader != null) {
+	            try {
+
+	                String tokenValue = authHeader.replace("Bearer", "").trim();
+	                OAuth2AccessToken accessToken = tokenStore.readAccessToken(tokenValue);
+	                tokenStore.removeAccessToken(accessToken);
+	                
+	                return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+	                
+	            } catch (Exception e) {
+	            	e.printStackTrace();
+	                return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
+	            }           
+	        }
+	        
+	        return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "users/me")
-	@ApiOperation(value = "getUserMe", nickname = "getUserMe", response = DummieResponse.class)
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = String.class),
+	@ApiOperation(value = "getUserMe", nickname = "getUserMe", response = ResponseEntity.class)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success", response = ResponseEntity.class),
 			@ApiResponse(code = 201, message = "OK"), @ApiResponse(code = 400, message = "Bad Request"),
 			@ApiResponse(code = 401, message = "Unauthorized"), @ApiResponse(code = 403, message = "Forbidden"),
 			@ApiResponse(code = 404, message = "Not Found"), @ApiResponse(code = 500, message = "Failure") })	
-	public DummieResponse getUserMe(
-			@ApiParam(value = "request", required = false) @RequestBody(required = false) DummieRequest request){
+	public ResponseEntity<?> getUserMe(HttpServletRequest request){
 		
-		return new DummieResponse("S4C. Not yet implemented (getUserMe)");
+	      User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	      if(user !=null){
+	    	  //we have to recover the user this way, 'cause the user from context, has not Assets and brings the entry point down
+	    	  user = this.userService.findByEmail(user.getEmail());
+	    	  return new ResponseEntity<User>(user,HttpStatus.OK);
+	      } else {
+	    	  return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
+	      }
+
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "users/reset")

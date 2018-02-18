@@ -104,14 +104,11 @@ public class UserService implements IUserService {
 	 */
 	public User postUser(User user) {
 		if (user != null) {			
-			user = this.adjustRoles(user);
-			System.out.println("A");
-			if(user != null){
-				System.out.println("B");
+			user = this.adjustRoles(user);			
+			if(user != null){				
 				user = this.adjustAssets(user);
 			}
-			if (user !=null){
-				System.out.println("C");
+			if (user !=null){				
 				user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 				return userRepository.saveAndFlush((user));
 			}

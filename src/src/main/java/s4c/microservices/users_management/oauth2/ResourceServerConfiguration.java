@@ -19,6 +19,19 @@ class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.anonymous().and().authorizeRequests().anyRequest().permitAll();
+		http.anonymous()
+		.and().authorizeRequests().anyRequest().permitAll()
+		.and().csrf().disable();
+
+		
+//	    http
+//	      .antMatcher("/**")
+//	      .authorizeRequests()
+//	        .antMatchers("/users/logout**", "/users/login**")
+//	        .permitAll()
+//	      .anyRequest()
+//	        .authenticated();
 	}
+	
+
 }
