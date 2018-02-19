@@ -26,34 +26,6 @@ public class AppBasicTest
 	@Autowired
 	private TestRestTemplate restTemplate;
 	
-
-//	@Test
-//	public void getSessionsTest() {
-//		String url = "/users/sessions";
-//		ResponseEntity<DummieResponse> response = this.restTemplate.getForEntity(url,
-//				DummieResponse.class, String.class);
-//		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-//	}
-	
-
-//	@Test
-//	public void userLogoutTest() {
-//		String url = "/users/users/logout";
-//		ResponseEntity<DummieResponse> response = this.restTemplate.getForEntity(url,
-//				DummieResponse.class, String.class);
-//		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-//
-//	}
-	
-//	@Test
-//	public void getUserMeTest() {
-//		String url = "/users/users/me";
-//		ResponseEntity<DummieResponse> response = this.restTemplate.getForEntity(url,
-//				DummieResponse.class, String.class);
-//		Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
-//
-//	}
-	
 	@Test
 	public void resetPasswordEmailTest() {
 		String url = "/users/users/reset";

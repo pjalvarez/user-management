@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Table(name = "sessions")
 public class Sessions {
 	
-	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
